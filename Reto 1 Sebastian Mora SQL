@@ -1,0 +1,74 @@
+create database ventasTienda;
+use ventasTienda;
+
+create table cliente(
+idCliente int auto_increment primary key,
+documentoCliente varchar(50) not null,
+nombreCliente varchar(50) not null,
+email varchar(50) unique,
+telefono varchar(50),
+fechaRegistro timestamp default current_timestamp
+);
+
+alter table cliente add idUsuarioFK int not null;
+
+alter table cliente
+add constraint FKUsuariocliente
+foreign key (idUsuarioFK)
+references usuario(idUsuario);
+
+describe cliente;
+
+alter table cliente add direccionCliente varchar(200);
+alter table cliente modify telefono varchar(15) not null;
+alter table cliente drop direccionCliente;
+alter table cliente change email emailCliente varchar(50) unique;
+
+
+create table pedido(
+idPedido int auto_increment primary key,
+idCLienteFK int,
+fechaPedido date,
+totalPedido decimal (10,2),
+foreign key (idClienteFK) references cliente(idCliente)
+);
+
+alter table pedido
+add constraint FKclientepedido
+foreign key (idClienteFK)
+references cliente(idCliente);
+
+drop table cliente;
+
+create table usuario(
+idUsuario int auto_increment primary key,
+nombreUsuario varchar (50) unique,
+emailUsuario varchar (50) unique,
+passwordUsuario varchar(50) unique
+);
+
+create table detallepedido(
+idPedido int auto_increment primary key
+);
+
+create table producto(
+idProducto int auto_increment primary key,
+nombreProducto varchar (50) unique,
+precioProducto varchar (50) unique,
+marcaProducto varchar (50) unique
+);
+use ventasTienda;
+alter table detallepedido add idProductoFK int not null;
+
+alter table detallepedido
+add constraint FKdetallepedidoProducto
+foreign key (idProductoFK)
+references producto(idProducto);
+
+alter table detallepedido add idpedidoFK int not null;
+
+alter table detallepedido
+add constraint FKdetallepedidoPedido
+foreign key (idPedidoFK)
+references pedido(idPedido);
+
