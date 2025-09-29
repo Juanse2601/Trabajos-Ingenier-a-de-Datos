@@ -1,0 +1,148 @@
+CLASE26/09/2025
+create database techCorp;
+use techCorp;
+
+create table empleados(
+idEmpleados int auto_increment primary key,
+nombreEmpleado varchar(50) not null,
+edad int not null,
+salario decimal(10,2),
+fechaContratacion date not null,
+nombreDepartamento varchar(50) null
+);
+
+
+insert into empleados (idEmpleados, nombreEmpleado, edad, salario, fechaContratacion, nombreDepartamento ) values
+(1, 'Angel Amaya', 35, 4500.00, '2021-05-10', 'Ventas'),
+(2, 'Juan José Obando', 28, 3900.00, '2019-07-20', 'IT'),
+(3, 'Tomas Ruiz', 41, 5200.00, '2018-03-15', 'Recursos Humanos'),
+(4, 'Jaime Gamboa', 30, 3000.00, '2022-01-10', 'finanzas'),
+(5, 'Felipe Poveda', 25, 2800.00, '2023-09-01','Marketing'),
+(6, 'Alejandro Arrollave', 38, 4700.00, '2021-08-05', 'Ventas');
+
+
+select nombreEmpleado, edad, salario from empleados;
+
+select nombreEmpleado, salario from empleados where salario > 4000;
+
+select nombreEmpleado from empleados where nombreDepartamento = 'Ventas';
+
+select nombreEmpleado, edad from empleados where edad between 30 and 40;
+
+select nombreEmpleado, fechaContratacion from empleados where fechaContratacion > '2020-12-31';
+
+select nombreDepartamento, COUNT(*) as 'totalEmpleados' from empleados group by nombreDepartamento;
+
+select avg(salario) as 'salarioPromedio' from empleados;
+
+select nombreEmpleado from empleados where nombreEmpleado like 'A%' or nombreEmpleado like 'C%';
+
+select nombreEmpleado from empleados where nombreDepartamento not like 'IT';
+
+select nombreEmpleado, salario from empleados where salario =(select max(salario) from empleados);
+
+
+
+
+
+
+
+CLASE29/09/2025
+
+create database techCorp;
+use techCorp;
+/*subconsultas y consultas multitablas: se ejecuta la subconsulta y luego la consulta principal
+escalares: devuelven un solo valor
+de fila: devuelven un registro(fila) completa
+de tabla: devuelven varios registros (varias filas)
+*/
+
+/* consultas multitablas
+inner join
+left join
+right join
+full outer join */
+
+select e.nombreEmpleado as 'Empleado', d.nombreDepartamento as 'Departamento' 
+from empleado e 
+inner join departamento d on e.idDperatamentoFK=D.idDepartamento; 
+
+
+
+create table departamentos(
+idDepartamento  int auto_increment primary key,
+nombreDepartamento varchar(50) not null
+);
+
+create table empleados(
+idEmpleados int auto_increment primary key,
+nombreEmpleado varchar(50) not null,
+fechadeNacimiento date not null,
+salario decimal(10,2),
+fechaContratacion date not null,
+idDepartamento int not null,
+foreign key (idDepartamento) references departamento(idDepartamento) 
+);
+
+insert into departamentos (nombreDepartamento, idDepartamento) values
+('Ventas',''),
+('IT',''),
+('Recursos Humanos',''),
+('finanzas',''),
+('Marketing','');
+
+insert into empleados (idEmpleados, nombreEmpleado, fechadeNacimiento, salario, fechaContratacion, idDepartamento) values
+(1, 'Angel Amaya', 35, 4500.00, '2021-05-10', 'Ventas',''),
+(2, 'Juan José Obando', 28, 3900.00, '2019-07-20', 'IT',''),
+(3, 'Tomas Ruiz', 41, 5200.00, '2018-03-15', 'Recursos Humanos',''),
+(4, 'Jaime Gamboa', 30, 3000.00, '2022-01-10', 'finanzas',''),
+(5, 'Felipe Poveda', 25, 2800.00, '2023-09-01','Marketing',''),
+(6, 'Alejandro Arrollave', 38, 4700.00, '2021-08-05', 'Ventas','');
+
+select nombreEmpleado, timestampdiff(YEAR, fechadeNacimiento, CURDATE()) AS edad, salario from empleados;
+
+select nombreEmpleado, salario from empleados where salario > 4000;
+
+select nombreEmpleado from Empleados where idDepartamentosFK in(select idDepartamento from Departamentos where nombreDepartamento ='ventas'); 
+
+select nombreEmpleado,  timestampdiff(YEAR, fechadeNacimiento, CURDATE()) from empleados where timestampdiff(YEAR, fechadeNacimiento, CURDATE()) between 30 and 40;
+
+select nombreEmpleado, fechaContratacion from empleados where fechaContratacion > '2020-12-31';
+
+select d.nombreDepartamento, count(e.idEmpleados) as totalEmpleados
+from departamentos d
+left join empleados e on d.idDepartamento = e.idDepartamento
+group by d.nombreDepartamento;
+
+select avg(salario) as 'salarioPromedio' from empleados;
+
+select nombreEmpleado from empleados where nombreEmpleado like 'A%' or nombreEmpleado like 'C%';
+
+select e.nombreEmpleado, d.nombreDepartamento
+from empleados e
+join departamentos d on e.idDepartamento = d.idDepartamento
+where d.nombreDepartamento <> 'IT';
+
+select nombreEmpleado, salario from empleados where salario =(select max(salario) from empleados);
+
+
+/*1. consultar los empleados cuyo salario sea mayor al salario de la empresa
+2. encuentre el nombre del empleado con el segundo salario mas alto(hacer con una subconsulta)
+3. utilizando left join, muestre los departamentos que no tienen empleados asignados
+4. muestre el tortal de empleados por cada departamento. */
+la primer sub consulta llevaria el salario mas grande, luego que la siguiente sea el salario menor a ese max(salario)
+
+select nombreEmpleado, salario from empleados where salario > (select avg(salario) from empleados);
+
+
+select nombreEmpleado, salario from empleados where salario = (select max(salario) from empleados where salario < (select max(salario) from empleados));
+
+select d.nombredepartamento
+from departamentos d 
+left join empleados e on d.idDepartamento = e.idDepartamento where e.idEmpleados is null;
+
+
+select d.nombreDepartamento, count(e.idEmpleados) as totalEmpleados
+from departamentos d
+left join empleados e on d.idDepartamento = e.idDepartamento
+group by d.nombreDepartamento;
